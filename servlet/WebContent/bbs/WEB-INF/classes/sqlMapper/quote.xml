@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+ <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+ <mapper namespace="Quote">
+ 
+     <select id="getQuoteAdminCount" parameterType="java.util.Map" resultType="Integer">
+     
+			SELECT COUNT(*) AS cnt FROM quote Q
+			WHERE Q.onoff LIKE '%' #{onOffSearch} '%'
+			AND (Q.name LIKE '%' #{search} '%' OR Q.tel LIKE '%' #{search} '%') 
+				<if test="branchSearch != null and branchSearch != ''"> 
+				AND Q.branch = #{branchSearch}
+				</if>
+				<if test="staffName != null and staffName != ''">
+				AND (select name from staff where id = Q.staff) LIKE '%' #{staffName} '%'
+				</if>
+				<if test="cpa != null and cpa != ''">
+				AND Q.business IN ('71','72','73')
+	  			</if>			
+			
+     </select>
+ 
+     <select id="getQuoteAdminList" parameterType="java.util.Map" resultType="sweet.vo.QuoteVo">
+     
+		SELECT 
+			T.SN,                                                    
+			T.reg_date regDate,                                              
+			(select code_name from code2 where code_group_id = 'business' and code_id = T.business) AS business,               
+			T.board_nm boardNm,                                                      
+			T.name,                                           
+			T.tel,                                                           
+			(select code_name from code2 where code_group_id = 'guar' and code_id = T.guar) AS guar,                                                           
+			T.contract,       
+			(select code_name from code2 where code_group_id = 'manu' and code_id = T.manu) AS manu,                           
+			(select car_name from carlist where no = T.car) AS car,                                                          
+			T.mail,                                                    
+			T.ins_age insAge,                                                
+			(select code_name from code2 where code_group_id = 'area' and code_id = T.area) AS area,                           
+			(select code_name from code2 where code_group_id = 'trac' and code_id = T.trac) AS trac,                           
+			(select name from staff where id = T.staff) AS staff,                                                    
+			T.id,     
+			T.onoff,                                 
+			T.optiontext optionText,                                     
+			T.memo,                                                          
+			T.cate,                                           
+			T.admintext,                                                     
+			T.branch,                                         
+			(select code_name from code2 where code_group_id = 'branch' and code_id = T.branch) AS branchNm,
+			(select count(*) from quote where tel = T.tel) AS doubleCnt
+		FROM quote T
+		WHERE T.onoff LIKE '%' #{onOffSearch} '%'
+		AND T.TEL != '--'                               
+		AND (T.name LIKE '%' #{search} '%' OR T.tel LIKE '%' #{search} '%')
+				<if test="branchSearch != null and branchSearch != ''"> 
+					AND T.branch = #{branchSearch}
+				</if>
+				<if test="cpa != null and cpa != ''">
+					AND T.business IN ('71','72','73')
+	  			</if>				
+				<if test="staffName != null and staffName != ''">
+					AND (select name from staff where id = T.staff) LIKE '%' #{staffName} '%' 
+				</if>		
+		ORDER BY T.reg_date DESC
+		LIMIT #{startNum} OFFSET #{endNum}
+     </select>
+
+
+	<select id="getQuoteManageCount" parameterType="java.util.Map" resultType="Integer">
+     
+			SELECT COUNT(*) AS cnt FROM quote Q
+			WHERE Q.branch = #{branchSearch}
+			AND (Q.name LIKE '%' #{search} '%' OR Q.tel LIKE '%' #{search} '%') 
+			<if test="staffName != null and staffName != ''">
+				AND (select name from staff where id = Q.staff) LIKE '%' #{staffName} '%'
+			</if>
+			
+     </select>
+ 
+     <select id="getQuoteManageList" parameterType="java.util.Map" resultType="sweet.vo.QuoteVo">
+     
+    	SELECT 
+			T.SN,                                                    
+			T.reg_date regDate,                                              
+			(select code_name from code2 where code_group_id = 'business' and code_id = T.business) AS business,               
+			T.board_nm boardNm,                                                      
+			T.name,                                           
+			T.tel,                                                           
+			(select code_name from code2 where code_group_id = 'guar' and code_id = T.guar) AS guar,                                                           
+			T.contract,       
+			(select code_name from code2 where code_group_id = 'manu' and code_id = T.manu) AS manu,                           
+			(select car_name from carlist where no = T.car) AS car,                                                          
+			T.mail,                                                    
+			T.ins_age insAge,                                                
+			(select code_name from code2 where code_group_id = 'area' and code_id = T.area) AS area,                           
+			(select code_name from code2 where code_group_id = 'trac' and code_id = T.trac) AS trac,                           
+			(select name from staff where id = T.staff) AS staff,                                                    
+			T.id,     
+			T.onoff,                                 
+			T.optiontext optionText,                                     
+			T.memo,                                                          
+			T.cate,                                           
+			T.admintext,                                                     
+			T.branch,                                         
+			(select code_name from code2 where code_group_id = 'branch' and code_id = T.branch) AS branchNm,
+			(select count(*) from quote where tel = T.tel) AS doubleCnt
+		FROM quote T
+		WHERE T.branch = #{branchSearch}
+		AND T.TEL != '--'                
+		AND (T.name LIKE '%' #{search} '%' OR T.tel LIKE '%' #{search} '%')	
+		<if test="staffName != null and staffName != ''">
+			AND (select name from staff where id = T.staff) LIKE '%' #{staffName} '%'
+		</if>
+		ORDER BY T.reg_date DESC
+		LIMIT #{startNum} OFFSET #{endNum}
+
+     </select>
+
+ </mapper>

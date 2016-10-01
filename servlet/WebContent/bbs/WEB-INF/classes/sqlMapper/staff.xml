@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+ <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+ <mapper namespace="Staff">
+     <select id="getStaffOne" resultType="sweet.vo.StaffVo">
+             SELECT id, password, name FROM user WHERE name = #{name}  
+     </select>
+ 
+ 	<select id="getBranchList" resultType="sweet.vo.CodeVo">
+            SELECT 
+            	CODE_GROUP_ID codeGroupId, 
+            	CODE_ID codeId, 
+            	CODE_NAME codeName, 
+            	CODE_DETAIL codeDetail1
+            FROM code2 
+			WHERE CODE_GROUP_ID = 'branch'
+			ORDER BY CODE_ID ASC;
+     </select>
+ 
+     <select id="getStaffList" parameterType="java.lang.String" resultType="sweet.vo.StaffVo">
+            SELECT 
+				ID, 
+				NAME, 
+				AUTH, 
+				(select code_name from code2 where code_group_id = 'branch' and code_id = BRANCH) AS BRANCH, 
+				(select code_name3 from code3 where code_id1 = 'branch' and code_id2 = BRANCH and code_id3 = DEPARTMENT) AS DEPARTMENT, 
+				SSN, 
+				DATE_OF_BIRTH dataOfBirth, 
+				HIRE_DATE hireDate, 
+				TITLE, 
+				MOBILE, 
+				MAIL, 
+				ADDRESS, 
+				OFFICE_NUMBER officeNumber, 
+				FAX_NUMBER faxNumber, 
+				MEMO, 
+				QUOTE_YN quoteYn,
+				REG_DATE
+	        FROM staff
+	        WHERE branch = #{branch}
+			AND leave_yn is null
+	        ORDER BY reg_date DESC
+     </select>
+     
+     <select id="getStaffAllocList" parameterType="java.lang.String" resultType="sweet.vo.StaffVo">
+            SELECT 
+				ID, 
+				NAME, 
+				AUTH, 
+				(select code_name from code2 where code_group_id = 'branch' and code_id = BRANCH) AS BRANCH, 
+				(select code_name3 from code3 where code_id1 = 'branch' and code_id2 = BRANCH and code_id3 = DEPARTMENT) AS DEPARTMENT, 
+				SSN, 
+				DATE_OF_BIRTH dataOfBirth, 
+				HIRE_DATE hireDate, 
+				TITLE, 
+				MOBILE, 
+				MAIL, 
+				ADDRESS, 
+				OFFICE_NUMBER officeNumber, 
+				FAX_NUMBER faxNumber, 
+				MEMO, 
+				QUOTE_YN quoteYn,
+				REG_DATE
+	        FROM staff
+	        WHERE branch = #{branch}
+	        AND (QUOTE_YN = 'Y' OR QUOTE_YN IS NULL)
+			AND leave_yn is null
+	        ORDER BY name ASC
+     </select>     
+ </mapper>
